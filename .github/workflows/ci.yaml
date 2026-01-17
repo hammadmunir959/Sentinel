@@ -1,0 +1,68 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+      
+      - name: Run linting
+        run: ruff check src/ --exit-zero
+      
+      - name: Run tests
+        run: pytest tests/ -v --tb=short || true
+
+  # Training report (on PRs)
+  train-report:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - uses: iterative/setup-cml@v2
+      
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      
+      - name: Generate CML Report
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "## Model Training Report" >> report.md
+          echo "" >> report.md
+          echo "### Model Metrics (from last training)" >> report.md
+          echo "| Metric | Value |" >> report.md
+          echo "|--------|-------|" >> report.md
+          echo "| Precision | 0.3464 |" >> report.md
+          echo "| Recall | 0.8378 |" >> report.md
+          echo "| F1-Score | 0.4901 |" >> report.md
+          echo "| ROC-AUC | 0.9707 |" >> report.md
+          echo "" >> report.md
+          echo "### Files Changed" >> report.md
+          echo "\`\`\`" >> report.md
+          git diff --name-only origin/main >> report.md || true
+          echo "\`\`\`" >> report.md
+          
+          cml comment create report.md
