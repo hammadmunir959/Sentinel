@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: sentinel-fraud-api
+    runtime: docker
+    repo: https://github.com/hammadmunir959/Sentinel
+    branch: main
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 8000
