@@ -63,8 +63,8 @@ Thumbs.db
 reports/*.html
 reports/*.png
 
-# DVC
-/data/raw/*.csv.dvc
+# DVC - track .dvc files, ignore actual data
+!/data/**/*.dvc
 !/data/.gitkeep
 
 # MLflow
