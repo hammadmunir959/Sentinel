@@ -32,17 +32,33 @@ Sentinel is a production-grade MLOps pipeline demonstrating best practices in ma
 
 ---
 
-## Model Performance
+## Model Performance & Benchmarks
 
-| Metric | Value | Description |
-|--------|-------|-------------|
-| **Recall** | 0.84 | Catches 84% of fraud cases |
-| **Precision** | 0.35 | Trade-off for high recall |
-| **F1-Score** | 0.49 | Harmonic mean |
-| **ROC-AUC** | 0.97 | Excellent discrimination |
-| **Avg Precision** | 0.74 | Area under PR curve |
+Rigorous testing was conducted against **10,000** unseen transactions using the local API.
 
-> **Note:** High recall is prioritized for fraud detection—missing fraud is more costly than false alerts.
+### Metrics Summary
+| Metric | Value | Interpretation |
+|--------|-------|----------------|
+| **ROC-AUC** | **0.9668** | Excellent discrimination between fraud & legit |
+| **Recall** | **0.7273** | Caught ~73% of fraud in this test batch |
+| **Precision** | **0.3809** | Approx 1 in 3 alerts is genuine fraud |
+| **Accuracy** | **99.68%** | Extremely high overall accuracy |
+| **Latency** | **~0.13ms** | Inference speed per transaction (batch mode) |
+
+### Visualizations
+The following graphs were generated from the live API benchmark (`src/benchmark_api.py`):
+
+#### 1. Confusion Matrix
+Shows the raw count of True Positives vs False Positives.
+![Confusion Matrix](reports/confusion_matrix_api.png)
+
+#### 2. ROC Curve
+Demonstrates the trade-off between sensitivity (Recall) and false alarm rate.
+![ROC Curve](reports/roc_curve_api.png)
+
+#### 3. Precision-Recall Curve (PRC)
+Crucial for imbalanced datasets like fraud detection.
+![Precision-Recall Curve](reports/precision_recall_api.png)
 
 ---
 
